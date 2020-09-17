@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.demo.model.School;
 import com.example.demo.proxy.StudentServiceProxy;
 import com.example.demo.repo.SchoolRepo;
