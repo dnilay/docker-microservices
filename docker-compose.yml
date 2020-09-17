@@ -1,0 +1,68 @@
+version: '3.3'
+services:
+  admin-server:
+    #image: dnilay/admin-server
+    build:
+      context: admin-server
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+    restart: always
+    networks:
+      - currency-compose-network
+  naming-server:
+    #image: dnilay/eureka-naming-server:latest
+    build:
+      context: eureka-naming-server
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    restart: always
+    networks:
+      - currency-compose-network
+
+  zipkin-server:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    environment:
+      STORAGE_TYPE: mem
+    ports:
+      - "9411:9411"
+    restart: always
+    networks:
+      - currency-compose-network
+
+  currency-conversion-service:
+    #image: dnilay/currency-conversion-service:latest
+    build:
+      context: currency-conversion-service
+      dockerfile: Dockerfile    
+    ports:
+      - "8100:8100"
+    restart: always
+    depends_on:
+      - naming-server
+      - admin-server
+      - zipkin-server
+      - forex-service
+    networks:
+      - currency-compose-network
+
+  forex-service:
+    #image: dnilay/forex-service:latest
+    build:
+      context: forex-service
+      dockerfile: Dockerfile    
+    ports:
+      - "8000:8000"
+    restart: always
+
+    depends_on:
+      - naming-server
+      - zipkin-server
+    networks:
+      - currency-compose-network
+  
+# Networks to be created to facilitate communication between containers
+networks:
+  currency-compose-network:
